@@ -1,1 +1,19 @@
-set -e
+set -e -x
+
+PKG_NAME="mariadb-10.3.15-linux-x86_64"
+ARCHIVE="mariadb/mariadb-10.3.15-linux-x86_64.tar.gz"
+
+
+# CHECK EXISTED
+if [[ -f $ARCHIVE ]] ; then
+  echo "Archive found"
+else
+  echo "Archive not found"
+  exit 1
+fi
+
+# EXTRACT
+echo "Extracting ARCHIVE"
+tar zxvf $ARCHIVE
+
+cp -a ${PKG_NAME}/* ${BOSH_INSTALL_TARGET}

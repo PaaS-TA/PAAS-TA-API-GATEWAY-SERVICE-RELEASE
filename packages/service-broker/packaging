@@ -1,1 +1,10 @@
-set -e
+set -e -x
+
+# Available variables
+# $BOSH_COMPILE_TARGET - where this package & spec'd source files are available
+# $BOSH_INSTALL_TARGET - where you copy/install files to be included in package
+
+SRC_DIR_NAME=service-broker
+JAR_NAME="paasta-api-gateway-service-broker.jar"
+
+cp ${SRC_DIR_NAME}/${JAR_NAME} ${BOSH_INSTALL_TARGET}

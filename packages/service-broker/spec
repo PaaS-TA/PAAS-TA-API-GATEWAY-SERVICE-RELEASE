@@ -3,4 +3,5 @@ name: service-broker
 
 dependencies: []
 
-files: []
+files:
+- service-broker/paasta-api-gateway-service-broker.jar
