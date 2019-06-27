@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -e -x
+
+JOB_NAME=service-broker
+PKG_DIR=/var/vcap/packages/${JOB_NAME}
+JAVA_DIR=/var/vcap/packages/java
+JAR_NAME="paasta-api-gateway-service-broker.jar"
+
+source /var/vcap/jobs/$JOB_NAME/helpers/ctl_setup.sh ${JOB_NAME}
+
+CONF_FILE=${JOB_DIR}/config/application.yml
+
+case $1 in
+
+  start)
+
+    echo "##### STARTING :: service-broker :: PIDFILE :: ${PIDFILE}"
+    echo "##### STARTING :: service-broker :: JOB_NAME :: ${JOB_NAME}"
+    echo "##### STARTING :: service-broker :: JOB_DIR :: ${JOB_DIR}"
+    echo "##### STARTING :: service-broker :: JAVA_DIR :: ${JAVA_DIR}"
+    echo "##### STARTING :: service-broker :: PKG_DIR :: ${PKG_DIR}"
+    echo "##### STARTING :: service-broker :: JAR_NAME :: ${JAR_NAME}"
+    echo "##### STARTING :: service-broker :: CONF_FILE :: ${CONF_FILE}"
+
+    pid_guard ${PIDFILE} ${JOB_NAME}
+
+    exec ${JAVA_DIR}/bin/java -cp "${PKG_DIR}/${JAR_NAME}" <%= p('java_opts')%> -Dspring.config.location=${CONF_FILE} org.springframework.boot.loader.JarLauncher \
+                    >>${LOG_DIR}/${JOB_NAME}.stdout.log \
+                    2>>${LOG_DIR}/${JOB_NAME}.stderr.log &
+
+    echo $! > ${PIDFILE}
+
+    echo "##### START :: service-broker :: SUCCESS :: ${PIDFILE}"
+
+    ;;
+
+  stop)
+
+    echo "##### STOP :: service-broker :: ${PIDFILE}"
+
+    kill_and_wait $PIDFILE
+
+    ;;
+
+  *)
+
+    echo "Usage: service_ctl {start|stop}"
+    ;;
+
+esac
+exit 0

@@ -1,0 +1,63 @@
+<%
+log_dir = '/var/vcap/sys/log'
+%>
+
+server:
+  port: <%= p('port') %>
+
+spring:
+  application:
+    name: api-gateway-service-broker
+  datasource:
+    url: jdbc:mysql://<%= link('mariadb_link').instances[0].address %>:<%= link('mariadb_link').p('port') %>/<%= link('mariadb_link').p('service.schema_name') %>?autoReconnect=true&useUnicode=true&characterEncoding=utf8
+    username: <%= link('mariadb_link').p('service.username') %>
+    password: <%= link('mariadb_link').p('service.password') %>
+  jpa:
+    hibernate:
+      ddl-auto: none
+      database: mysql
+      show-sql: false
+      format_sql: true
+
+logging:
+  path: <%= "#{log_dir}" %>
+  file: <%= "#{log_dir}/apiGatewayBroker.log" %>
+  level:
+    root: <%= p('logging.level_root') %>
+    org.paasta.servicebroker.apigateway: <%= p('logging.level_broker') %>
+    org.hibernate: <%= p('logging.level_hibernate') %>
+
+dashboard:
+  url: <%= p('dashboard.url') %>
+
+services:
+  id: <%= p('services.id') %>
+  name: <%= p('services.name') %>
+  description: <%= p('services.description') %>
+  bindable: <%= p('services.bindable') %>
+  tags:
+  metadata:
+    displayName: <%= p('services.metadata.displayName') %>
+    imageUrl: <%= p('services.metadata.imageUrl') %>
+    longDescription: <%= p('services.metadata.longDescription') %>
+    providerDisplayName: <%= p('services.metadata.providerDisplayName') %>
+    documentationUrl: <%= p('services.metadata.documentationUrl') %>
+    supportUrl: <%= p('services.metadata.supportUrl') %>
+#    requires:
+  plan_updatable: <%= p('services.plan_updatable') %>
+  plans:
+    - id: <%= p('services.plans.id') %>
+      name: <%= p('services.plans.name') %>
+      description: <%= p('services.plans.description') %>
+      metadata:
+        bullets:
+        costs:
+          amount:
+            usd: <%= p('services.plans.costs_usd') %>
+            krw: <%= p('services.plans.costs_krw') %>
+          unit: <%= p('services.plans.costs_unit') %>
+      free: <%= p('services.plans.free') %>
+#  dashboardClient:
+#    id:
+#    secret:
+#    redirectUri:
