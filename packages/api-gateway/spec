@@ -1,0 +1,8 @@
+---
+name: api-gateway
+
+dependencies: []
+
+files: 
+- api-gateway/wso2am-2.6.0.zip
+- api-gateway/mysql-connector-java-5.1.47-bin.jar

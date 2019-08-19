@@ -1,0 +1,23 @@
+set -e -x
+
+PKG_NAME="wso2am-2.6.0"
+ARCHIVE="api-gateway/wso2am-2.6.0.zip"
+DB_CONNECTOR="api-gateway/mysql-connector-java-5.1.47-bin.jar"
+
+# CHECK EXISTED
+if [[ -f ${ARCHIVE} ]] ; then
+  echo "Archive found"
+else
+  echo "Archive not found"
+  exit 1
+fi
+
+# EXTRACT
+echo "Extracting ARCHIVE"
+unzip -q ${ARCHIVE}
+
+# COPY DB_CONNECTOR
+cp -a ${DB_CONNECTOR} ${PKG_NAME}/repository/components/lib
+
+# COPY
+cp -a ${PKG_NAME}/* ${BOSH_INSTALL_TARGET}
