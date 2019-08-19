@@ -1,0 +1,84 @@
+#!/bin/bash -e
+
+set -e -x
+
+SCRIPT_NAME=$(basename $0)
+JOB_NAME=service-broker
+RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
+CONF_DIR=/var/vcap/jobs/${JOB_NAME}/config
+PIDFILE=${RUN_DIR}/mariadb.pid
+
+DB_PKG_DIR=/var/vcap/packages/mariadb
+DB_LOG_DIR=/var/vcap/sys/log/database
+
+DATA_DIR=/var/vcap/store/mariadb
+BROKER_SCHEMA="<%= p('database.broker.schema_name')%>"
+ADMIN_PW="<%= p('database.admin_password')%>"
+
+source /var/vcap/packages/common/syslog_utils.sh
+
+tee_output_to_sys_log_and_file ${DB_LOG_DIR} ${SCRIPT_NAME}
+
+case $1 in
+
+  start)
+
+    echo "##### STARTING :: MARIA-DB :: SCRIPT_NAME :: ${SCRIPT_NAME}"
+    echo "##### STARTING :: MARIA-DB :: CONF_DIR :: ${CONF_DIR}"
+    echo "##### STARTING :: MARIA-DB :: DB_PKG_DIR :: ${DB_PKG_DIR}"
+    echo "##### STARTING :: MARIA-DB :: DB_LOG_DIR :: ${DB_LOG_DIR}"
+    echo "##### STARTING :: MARIA-DB :: PIDFILE :: ${PIDFILE}"
+
+    nohup ${DB_PKG_DIR}/bin/mysqld_safe --defaults-file=${CONF_DIR}/mariadb.cnf --user=vcap \
+          >>${DB_LOG_DIR}/${SCRIPT_NAME}.out.log \
+          2>>${DB_LOG_DIR}/${SCRIPT_NAME}.err.log &
+
+    RETVAL=$?
+
+    if [ ${RETVAL} -ne 0 ]; then
+      echo "##### START :: MARIA-DB :: FAIL :: ${RETVAL}"
+      exit 1
+    fi
+
+    echo "##### MARIA-DB :: RETVAL :: ${RETVAL}"
+    CYCLE=0
+
+    while [ ! -e ${RUN_DIR}/mysql.sock ]
+    do
+      CYCLE=`expr ${CYCLE} + 1`
+      echo "::::: STARTING .................. ${CYCLE}"
+      sleep 20
+
+      if [ ${CYCLE} -eq 3 ]; then
+        echo "##### START :: MARIA-DB :: FAIL ::"
+        break
+      fi
+    done
+
+    if [ ! -d "${DATA_DIR}/${BROKER_SCHEMA}" ]; then
+
+      echo "##### SERVICE-BROKER ::: DATABASE SCRIPT ::::: CREATE SCHEMA"
+      ${DB_PKG_DIR}/bin/mysql -u root < ${CONF_DIR}/mariadb_init.sql  
+
+      echo "##### SERVICE-BROKER ::: DATABASE SCRIPT ::::: CREATE TABLE"
+
+      ${DB_PKG_DIR}/bin/mysql -u root -p${ADMIN_PW} < ${CONF_DIR}/create_broker_table.sql
+
+    fi
+ 
+    echo "##### START :: MARIA-DB :: SUCCESS :: ${PIDFILE}"
+
+    ;;
+ 
+  stop)
+    echo "##### STOP :: MARIA-DB :: SUCCESS :: ${PIDFILE}"
+    sudo kill $(cat $PIDFILE)
+    ;;
+ 
+  *)
+    echo "Usage: mariadb_ctl {start|stop}"
+    ;;
+ 
+esac
+exit 0
+

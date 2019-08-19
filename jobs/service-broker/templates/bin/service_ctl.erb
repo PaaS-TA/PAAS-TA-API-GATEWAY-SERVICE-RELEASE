@@ -3,31 +3,39 @@
 set -e -x
 
 JOB_NAME=service-broker
+SCRIPT_NAME=$(basename $0)
+JOB_DIR=/var/vcap/jobs/${JOB_NAME}
 PKG_DIR=/var/vcap/packages/${JOB_NAME}
+LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
 JAVA_DIR=/var/vcap/packages/java
+RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
+PIDFILE=${RUN_DIR}/${JOB_NAME}.pid
+
 JAR_NAME="paasta-api-gateway-service-broker.jar"
-
-source /var/vcap/jobs/$JOB_NAME/helpers/ctl_setup.sh ${JOB_NAME}
-
 CONF_FILE=${JOB_DIR}/config/application.yml
+
+ource /var/vcap/packages/common/syslog_utils.sh
+source /var/vcap/packages/common/pid_utils.sh
+
+tee_output_to_sys_log_and_file ${LOG_DIR} ${SCRIPT_NAME}
 
 case $1 in
 
   start)
 
-    echo "##### STARTING :: service-broker :: PIDFILE :: ${PIDFILE}"
-    echo "##### STARTING :: service-broker :: JOB_NAME :: ${JOB_NAME}"
-    echo "##### STARTING :: service-broker :: JOB_DIR :: ${JOB_DIR}"
-    echo "##### STARTING :: service-broker :: JAVA_DIR :: ${JAVA_DIR}"
-    echo "##### STARTING :: service-broker :: PKG_DIR :: ${PKG_DIR}"
-    echo "##### STARTING :: service-broker :: JAR_NAME :: ${JAR_NAME}"
-    echo "##### STARTING :: service-broker :: CONF_FILE :: ${CONF_FILE}"
+    echo "##### STARTING :: SERVICE-BROKER :: PIDFILE :: ${PIDFILE}"
+    echo "##### STARTING :: SERVICE-BROKER :: JOB_NAME :: ${JOB_NAME}"
+    echo "##### STARTING :: SERVICE-BROKER :: JOB_DIR :: ${JOB_DIR}"
+    echo "##### STARTING :: SERVICE-BROKER :: PKG_DIR :: ${PKG_DIR}"
+    echo "##### STARTING :: SERVICE-BROKER :: JAVA_DIR :: ${JAVA_DIR}"
+    echo "##### STARTING :: SERVICE-BROKER :: JAR_NAME :: ${JAR_NAME}"
+    echo "##### STARTING :: SERVICE-BROKER :: CONF_FILE :: ${CONF_FILE}"
 
     pid_guard ${PIDFILE} ${JOB_NAME}
 
     exec ${JAVA_DIR}/bin/java -cp "${PKG_DIR}/${JAR_NAME}" <%= p('java_opts')%> -Dspring.config.location=${CONF_FILE} org.springframework.boot.loader.JarLauncher \
-                    >>${LOG_DIR}/${JOB_NAME}.stdout.log \
-                    2>>${LOG_DIR}/${JOB_NAME}.stderr.log &
+                    >>${LOG_DIR}/${SCRIPT_NAME}.stdout.log \
+                    2>>${LOG_DIR}/${SCRIPT_NAME}.stderr.log &
 
     echo $! > ${PIDFILE}
 

@@ -1,0 +1,66 @@
+#!/bin/bash
+
+set -e -x
+
+##############################################################################
+### BASE SETTING
+##############################################################################
+
+JOB_NAME=service-broker
+JOB_DIR=/var/vcap/jobs/${JOB_NAME}
+CONF_DIR=${JOB_DIR}/config
+DB_PKG_DIR=/var/vcap/packages/mariadb
+DATA_DIR=/var/vcap/store/mariadb
+
+RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
+LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
+TMP_DIR=/var/vcap/sys/tmp/${JOB_NAME}
+DB_LOG_DIR=/var/vcap/sys/log/database
+
+function setup_environment() {
+
+  for dir in ${RUN_DIR} ${LOG_DIR} ${TMP_DIR} ${DB_LOG_DIR}
+  do
+    mkdir -p ${dir}
+    chown vcap:vcap ${dir}
+    chmod 775 ${dir}
+    echo "##### SETUP_ENVIRONMENT :: BROKER :: ${dir}"
+  done
+
+}
+
+source /var/vcap/packages/common/syslog_utils.sh
+tee_output_to_sys_log_and_file "${LOG_DIR}" "$(basename "$0")"
+setup_environment
+
+##############################################################################
+### DATABASE PRE-START
+##############################################################################
+
+if [ ! -d /usr/local/mysql ]; then
+  echo "##### PRE-START :: BROKER-DATABASE :: link :: /usr/local/mysql -- ${DB_PKG_DIR}"
+  ln -s ${DB_PKG_DIR} /usr/local/mysql
+fi
+
+if [ ! -e /tmp/mysql.sock ]; then
+  echo "##### PRE-START :: BROKER-DATABASE :: link :: /tmp/mysql.sock -- ${RUN_DIR}/mysql.sock"
+  ln -sf ${RUN_DIR}/mysql.sock /tmp/mysql.sock
+fi
+
+if [ ! -f /etc/mariadb/mariadb.cnf ]; then
+  echo "##### PRE-START :: BROKER-DATABASE :: link :: /etc/mariadb/mariadb.cnf -- ${CONF_DIR}/mariadb.cnf"
+  mkdir -p /etc/mariadb
+  ln -sf ${CONF_DIR}/mariadb.cnf /etc/mariadb/mariadb.cnf
+fi
+
+if [ ! -d "${DATA_DIR}" ]; then
+  echo "#####  PRE-START :: BROKER-DATABASE :: mysql_install_db defaults-file = ${CONF_DIR}/mariadb.cnf"
+
+  mkdir -p ${DATA_DIR}
+  chown -R vcap:vcap ${DATA_DIR}
+
+  cd ${DB_PKG_DIR}
+  ./scripts/mysql_install_db --defaults-file=${CONF_DIR}/mariadb.cnf --user=vcap
+
+fi
+

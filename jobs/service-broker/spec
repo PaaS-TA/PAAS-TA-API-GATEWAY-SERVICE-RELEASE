@@ -2,22 +2,45 @@
 name: service-broker
 
 templates:
+  bin/pre-start.erb: bin/pre-start
   bin/service_ctl.erb: bin/service_ctl
-  bin/monit_debugger: bin/monit_debugger
+  bin/mariadb_ctl.erb: bin/mariadb_ctl
   config/application.yml.erb: config/application.yml
-  data/properties.sh: data/properties.sh
-  helpers/ctl_setup.sh: helpers/ctl_setup.sh
-  helpers/ctl_utils.sh: helpers/ctl_utils.sh
+  config/mariadb.cnf.erb: config/mariadb.cnf
+  config/create_broker_table.sql.erb: config/create_broker_table.sql
+  config/mariadb_init.sql.erb: config/mariadb_init.sql
 
 packages: 
 - java
+- commo
 - service-broker
+- mariadb
 
-consumes:
-- name: mariadb_link
-  type: mariadb
+provides:
+- name: brokerdb_link
+  type: dbconn
+  properties:
+  - database.port
+  - database.broker.username
+  - database.broker.password
+  - database.broker.schema_name
 
 properties:
+  database.port:
+    description: MariaDB server port
+    default: 13306
+  database.admin_password:
+    description: MariaDB admin user password
+    default: admin
+  database.broker.username:
+    description: MariaDB broker user
+    default: broker
+  database.broker.password:
+    description: MariaDB broker user password
+    default: broker
+  database.broker.schema_name:
+    description: MariaDB broker schema name
+    default: apiGatewayBroker
   java_opts:
     description: "Java options"
     default: "-Xms1024m -Xmx1024m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m"

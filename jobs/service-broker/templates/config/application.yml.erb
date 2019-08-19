@@ -9,9 +9,9 @@ spring:
   application:
     name: api-gateway-service-broker
   datasource:
-    url: jdbc:mysql://<%= link('mariadb_link').instances[0].address %>:<%= link('mariadb_link').p('port') %>/<%= link('mariadb_link').p('service.schema_name') %>?autoReconnect=true&useUnicode=true&characterEncoding=utf8
-    username: <%= link('mariadb_link').p('service.username') %>
-    password: <%= link('mariadb_link').p('service.password') %>
+    url: jdbc:mysql://<%= spec.address %>:<%= p('database.port') %>/<%= p('database.broker.schema_name') %>?autoReconnect=true&useUnicode=true&characterEncoding=utf8
+    username: <%= p('database.broker.username') %>
+    password: <%= p('database.broker.password') %>
   jpa:
     hibernate:
       ddl-auto: none

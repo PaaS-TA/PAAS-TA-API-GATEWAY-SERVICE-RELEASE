@@ -1,0 +1,27 @@
+-- -------------------------------
+-- CREATE TABLE :: SERVICE-BROKER 
+-- -------------------------------
+DROP TABLE IF EXISTS <%= p("database.broker.schema_name") %>.`service_instance`;
+CREATE TABLE <%= p("database.broker.schema_name") %>.`service_instance` (
+  `service_instance_id` VARCHAR(45) NOT NULL COMMENT 'SERVICE INSTANCE ID',
+  `service_id` VARCHAR(45) NOT NULL COMMENT 'SERVICE ID',
+  `plan_id` VARCHAR(45) NOT NULL COMMENT 'SERVICE PLAN ID',
+  `organization_guid` VARCHAR(45) NOT NULL COMMENT 'ORGANIZATION GUID',
+  `space_guid` VARCHAR(45) NOT NULL COMMENT 'SPACE GUID',
+  `dashboard_url` VARCHAR(255) NOT NULL COMMENT 'DASHBOARD URL',
+  `created_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'CREATED TIME',
+  PRIMARY KEY (`service_instance_id`)
+) COMMENT = 'SERVICE INSTANCE MANAGEMENT TABLE' ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS <%= p("database.broker.schema_name") %>.`dedicated_vm`;
+CREATE TABLE <%= p("database.broker.schema_name") %>.`dedicated_vm` (
+  `vm_ip` VARCHAR(15) NOT NULL COMMENT 'VM IP',
+  `vm_name` VARCHAR(100) NOT NULL COMMENT 'VM NAME',
+  `vm_id` VARCHAR(45) NOT NULL COMMENT 'VM_ID',
+  `assignment` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'ASSIGNMENT (0:wating for assignment, 1:wating for vm recreate, 2:assigned)',
+  `dashboard_url` VARCHAR(255) DEFAULT NULL COMMENT 'DASHBOARD_URL',
+  `provisioned_service_instance_id` VARCHAR(45) DEFAULT NULL COMMENT 'PROVISIONED SERVICE INSTANCE ID',
+  `provisioned_time` TIMESTAMP DEFAULT 0 COMMENT 'PROVISIONED TIME',
+  `created_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'CREATED TIME',
+  PRIMARY KEY (`vm_ip`)
+) COMMENT = 'DEDICATED VM MANAGEMENT TABLE' ENGINE=InnoDB DEFAULT CHARSET=utf8;
