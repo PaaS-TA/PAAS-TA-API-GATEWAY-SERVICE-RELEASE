@@ -14,7 +14,7 @@ PIDFILE=${RUN_DIR}/${JOB_NAME}.pid
 JAR_NAME="paasta-api-gateway-service-broker.jar"
 CONF_FILE=${JOB_DIR}/config/application.yml
 
-ource /var/vcap/packages/common/syslog_utils.sh
+source /var/vcap/packages/common/syslog_utils.sh
 source /var/vcap/packages/common/pid_utils.sh
 
 tee_output_to_sys_log_and_file ${LOG_DIR} ${SCRIPT_NAME}
@@ -39,13 +39,13 @@ case $1 in
 
     echo $! > ${PIDFILE}
 
-    echo "##### START :: service-broker :: SUCCESS :: ${PIDFILE}"
+    echo "##### START :: SERVICE-BROKER :: SUCCESS :: ${PIDFILE}"
 
     ;;
 
   stop)
 
-    echo "##### STOP :: service-broker :: ${PIDFILE}"
+    echo "##### STOP :: SERVICE-BROKER :: ${PIDFILE}"
 
     kill_and_wait $PIDFILE
 

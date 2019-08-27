@@ -1,0 +1,62 @@
+#!/bin/bash -e
+
+set -e -x
+
+JOB_NAME=api-gateway
+SCRIPT_NAME=$(basename $0)
+PKG_DIR=/var/vcap/packages/${JOB_NAME}
+LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
+RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
+PIDFILE=${RUN_DIR}/${JOB_NAME}.pid
+
+export JAVA_HOME=/var/vcap/packages/java
+export PATH=${JAVA_HOME}/bin:${PATH}
+
+source /var/vcap/packages/common/syslog_utils.sh
+source /var/vcap/packages/common/pid_utils.sh
+
+tee_output_to_sys_log_and_file ${LOG_DIR} ${SCRIPT_NAME}
+
+case $1 in
+
+  start)
+
+    echo "##### STARTING :: API-GATEWAY :: PIDFILE :: ${PIDFILE}"
+    echo "##### STARTING :: API-GATEWAY :: PKG_DIR :: ${PKG_DIR}"
+    echo "##### STARTING :: API-GATEWAY :: LOG_DIR :: ${LOG_DIR}"
+    echo "##### STARTING :: API-GATEWAY :: JAVA_HOME :: ${JAVA_HOME}"
+    echo "##### STARTING :: API-GATEWAY :: PATH :: ${PATH}"
+
+    pid_guard ${PIDFILE} ${JOB_NAME}
+
+    sh ${PKG_DIR}/bin/wso2server.sh start \
+              >>${LOG_DIR}/${SCRIPT_NAME}.out.log \
+              2>>${LOG_DIR}/${SCRIPT_NAME}.err.log &
+
+    # Sleep for while server comes up
+    sleep 10
+
+    # Service PID
+    GATEWAY_PID=`ps -ef | grep java | grep -v grep | awk '{print $2}' `
+    echo ${GATEWAY_PID} > ${PIDFILE}
+
+    echo "##### START :: API-GATEWAY :: SUCCESS :: ${PIDFILE}"
+
+    ;;
+
+  stop)
+
+    echo "##### STOP :: API-GATEWAY :: ${PIDFILE}"
+
+    kill_and_wait ${PIDFILE}
+
+    ;;
+
+  *)
+
+    echo "Usage: service_ctl {start|stop}"
+    ;;
+
+esac
+exit 0
+

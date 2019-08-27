@@ -1,0 +1,16 @@
+-- ----------------------------------------------------------------------------------
+-- CREATE SCHEMA :: WSO2_CARBON_DB(regdb) / WSO2AM_DB / WSO2_MB_STORE_DB(WSO2MB_DB)
+-- ----------------------------------------------------------------------------------
+DROP SCHEMA IF EXISTS `regdb`;
+DROP SCHEMA IF EXISTS `WSO2AM_DB`;
+DROP SCHEMA IF EXISTS `WSO2MB_DB`;
+
+CREATE SCHEMA IF NOT EXISTS `regdb` DEFAULT CHARACTER SET utf8;
+CREATE SCHEMA IF NOT EXISTS `WSO2AM_DB` DEFAULT CHARACTER SET utf8;
+CREATE SCHEMA IF NOT EXISTS `WSO2MB_DB` DEFAULT CHARACTER SET utf8;
+
+GRANT ALL PRIVILEGES ON regdb.* TO '<%= p("database.service.username") %>'@'%' IDENTIFIED BY '<%= p("database.service.password") %>' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON WSO2AM_DB.* TO '<%= p("database.service.username") %>'@'%' IDENTIFIED BY '<%= p("database.service.password") %>' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON WSO2MB_DB.* TO '<%= p("database.service.username") %>'@'%' IDENTIFIED BY '<%= p("database.service.password") %>' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;

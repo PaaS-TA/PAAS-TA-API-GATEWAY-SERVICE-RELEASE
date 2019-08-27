@@ -9,7 +9,7 @@ spring:
   application:
     name: api-gateway-service-broker
   datasource:
-    url: jdbc:mysql://<%= spec.address %>:<%= p('database.port') %>/<%= p('database.broker.schema_name') %>?autoReconnect=true&useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://<%= spec.address %>:<%= p('database.port') %>/<%= p('database.broker.schema_name') %>?zeroDateTimeBehavior=convertToNull&autoReconnect=true&useUnicode=true&characterEncoding=utf8
     username: <%= p('database.broker.username') %>
     password: <%= p('database.broker.password') %>
   jpa:
@@ -27,8 +27,12 @@ logging:
     org.paasta.servicebroker.apigateway: <%= p('logging.level_broker') %>
     org.hibernate: <%= p('logging.level_hibernate') %>
 
-dashboard:
-  url: <%= p('dashboard.url') %>
+bosh:
+  client_id: <%= p('bosh.client.id') %>
+  client_secret: <%= p('bosh.client.secret') %>
+  url: <%= p('bosh.url') %>
+  oauth_url: <%= p('bosh.oauth_url') %>
+  deployment_name: <%= p('bosh.deployment_name') %>
 
 services:
   id: <%= p('services.id') %>

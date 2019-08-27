@@ -1,0 +1,47 @@
+---
+name: api-gateway
+
+templates: 
+  bin/service_ctl.erb: bin/service_ctl
+  bin/mariadb_ctl.erb: bin/mariadb_ctl
+  bin/db_query_ctl.erb: bin/db_query_ctl
+  bin/pre-start.erb: bin/pre-start
+  bin/post-deploy.erb: bin/post-deploy
+  config/database/mariadb.cnf.erb: config/database/mariadb.cnf
+  config/database/mariadb_init.sql.erb: config/database/mariadb_init.sql
+  config/database/init_schema.sql.erb: config/database/init_schema.sql
+  config/database/create_WSO2_CARBON_DB_table.sql: config/database/create_WSO2_CARBON_DB_table.sql
+  config/database/create_WSO2AM_DB_table.sql: config/database/create_WSO2AM_DB_table.sql
+  config/database/create_WSO2MB_DB_table.sql: config/database/create_WSO2MB_DB_table.sql
+  config/api-gateway/api-manager.xml.erb: config/api-gateway/api-manager.xml
+  config/api-gateway/carbon.xml.erb: config/api-gateway/carbon.xml
+  config/api-gateway/master-datasources.xml.erb: config/api-gateway/master-datasources.xml
+  config/api-gateway/log4j.properties.erb: config/api-gateway/log4j.properties
+  config/api-gateway/catalina-server.xml.erb: config/api-gateway/catalina-server.xml
+
+packages: 
+- java
+- common
+- mariadb
+- api-gateway
+
+consumes:
+- name: brokerdb_link
+  type: dbconn
+
+properties: 
+  database.port:
+    description: MariaDB server port
+    default: 13306
+  database.admin_password:
+    description: MariaDB admin user password
+    default: admin
+  database.service.username:
+    description: MariaDB service user
+    default: service
+  database.service.password:
+    description: MariaDB service user password
+    default: service
+  service.admin_password:
+    description: "API Gateway Super Admin Password"
+    default: "service"

@@ -1,0 +1,8 @@
+-- ----------------------------------------------------------------------------------
+-- MARIA DB ROOT USER/SERVICE USER SETTING 
+-- ----------------------------------------------------------------------------------
+UPDATE mysql.user SET password=PASSWORD('<%= p("database.admin_password") %>') WHERE user='root';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '<%= p("database.admin_password") %>' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+CREATE USER '<%= p("database.service.username") %>'@'localhost' IDENTIFIED BY '<%= p("database.service.password") %>';

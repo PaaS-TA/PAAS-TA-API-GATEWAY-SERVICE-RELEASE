@@ -12,7 +12,7 @@ templates:
 
 packages: 
 - java
-- commo
+- common
 - service-broker
 - mariadb
 
@@ -27,20 +27,30 @@ provides:
 
 properties:
   database.port:
-    description: MariaDB server port
+    description: "MariaDB server port"
     default: 13306
   database.admin_password:
-    description: MariaDB admin user password
+    description: "MariaDB admin user password"
     default: admin
   database.broker.username:
-    description: MariaDB broker user
+    description: "MariaDB broker user"
     default: broker
   database.broker.password:
-    description: MariaDB broker user password
+    description: "MariaDB broker user password"
     default: broker
   database.broker.schema_name:
-    description: MariaDB broker schema name
+    description: "MariaDB broker schema name"
     default: apiGatewayBroker
+  bosh.client.id:
+    description: "Bosh client admin ID"
+  bosh.client.secret:
+    description: "Bosh client admin secret"
+  bosh.url:
+    description: "Bosh api url"
+  bosh.oauth_url:
+    description: "Bosh oauth url"
+  bosh.deployment_name:
+    description: "Bosh deployment name"
   java_opts:
     description: "Java options"
     default: "-Xms1024m -Xmx1024m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m"
@@ -56,9 +66,6 @@ properties:
   logging.level_hibernate:
     description: "hibernate logging level"
     default: INFO
-  dashboard.url:
-    description: "A URI for the service dashboard"
-    default: "http://DASHBOARD-URL/WSO2/"
   services.id:
     description: "An identifier used to correlate this service in future requests to the broker"
     default: "2c074457-d87d-401c-9838-b09c33cf9e73"

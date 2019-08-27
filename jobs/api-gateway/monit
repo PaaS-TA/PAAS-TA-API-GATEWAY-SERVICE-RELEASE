@@ -1,0 +1,12 @@
+check process api-gateway
+  with pidfile /var/vcap/sys/run/api-gateway/api-gateway.pid
+  depends on mariadb
+  start program "/var/vcap/jobs/api-gateway/bin/service_ctl start" with timeout 60 seconds
+  stop program "/var/vcap/jobs/api-gateway/bin/service_ctl stop"
+  group vcap
+
+check process mariadb
+  with pidfile /var/vcap/sys/run/api-gateway/mariadb.pid
+  start program "/var/vcap/jobs/api-gateway/bin/mariadb_ctl start" with timeout 60 seconds
+  stop program "/var/vcap/jobs/api-gateway/bin/mariadb_ctl stop"
+  group vcap

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+set -e -x
+
+<%
+  def spec_ext_ip
+    if spec.networks.vip.present?
+      spec.networks.vip.ip
+    elsif spec.networks.service_public.present?
+      spec.networks.service_public.ip
+    else
+      spec.address
+    end
+  end
+  WSO2_SERVER_URL = spec_ext_ip
+  DASHBOARD_URL="https://"+spec_ext_ip+":9443/carbon"
+%>
+
+JOB_ID=<%= spec.id %>
+JOB_NAME=<%= spec.name %>
+SERVER_URL=<%="#{WSO2_SERVER_URL}"%>
+DB_PKG_DIR=/var/vcap/packages/mariadb
+DB_CONF_DIR=/var/vcap/jobs/api-gateway/config/database
+
+source /var/vcap/jobs/${JOB_NAME}/bin/db_query_ctl
+
+check_vm_status
+
+echo "##### POST-DEPLOY ::: CHECK VM STATUS :: ${VM_STATUS}"
+
+if [ ${VM_STATUS} -eq 1 ]; then
+
+  echo "##### POST-DEPLOY ::: INSERT VM INFO"
+
+  INSERT_VM_INFO_QUERY="INSERT INTO dedicated_vm
+VALUES ('${SERVER_URL}', '${JOB_NAME}', '${JOB_ID}', 0, '<%= "#{DASHBOARD_URL}" %>', NULL, 0, NULL)
+ON DUPLICATE KEY UPDATE vm_name='${JOB_NAME}', vm_id='${JOB_ID}', assignment=0, dashboard_url='<%= "#{DASHBOARD_URL}" %>', provisioned_time=0,created_time=CURRENT_TIMESTAMP;"
+
+  RESULT=`echo ${INSERT_VM_INFO_QUERY} | ${DB_PKG_DIR}/bin/mysql -u ${BROKER_USERNAME} -p${BROKER_PASSWORD} --port $[BROKER_DB_PORT] --host ${BROKER_DB_URL} ${BROKER_SCHEMA}`
+
+  echo "##### POST-DEPLOY ::: INSERT VM INFO ::: RESULT ::: $RESULT"
+fi

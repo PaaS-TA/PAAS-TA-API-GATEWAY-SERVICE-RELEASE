@@ -1,0 +1,36 @@
+#!/bin/bash -e
+ 
+set -e -x
+
+function check_vm_status() {
+  echo "##### API-GATEWAY ::: DATABASE QUERY CTL ::::: check_vm_status"
+
+  BROKER_DB_URL=<%= link('brokerdb_link').instances[0].address %>
+  BROKER_DB_PORT=<%= link('brokerdb_link').p('database.port') %>
+  BROKER_SCHEMA=<%= link('brokerdb_link').p('database.broker.schema_name') %>
+  BROKER_USERNAME=<%= link('brokerdb_link').p('database.broker.username') %>
+  BROKER_PASSWORD=<%= link('brokerdb_link').p('database.broker.password') %>
+
+  VM_CHECK_QUERY="SELECT assignment FROM dedicated_vm WHERE vm_ip='${SERVER_URL}' and vm_name='${JOB_NAME}' and vm_id='${JOB_ID}'"
+  
+  VM_STATUS=`echo ${VM_CHECK_QUERY} | ${DB_PKG_DIR}/bin/mysql -u ${BROKER_USERNAME} -p${BROKER_PASSWORD} --port $[BROKER_DB_PORT] --host ${BROKER_DB_URL} ${BROKER_SCHEMA} --skip-column-names`
+
+  if [ -z "${VM_STATUS}" ]; then
+    VM_STATUS=1
+  fi
+  echo "##### API-GATEWAY ::: DATABASE QUERY CTL ::::: check_vm_status :: RESULT :: $VM_STATUS"
+}
+
+function create_database() {
+  echo "##### API-GATEWAY ::: DATABASE QUERY CTL ::::: create_database :: START"
+
+  echo "##### API-GATEWAY ::: DATABASE QUERY CTL ::::: create_database :: SCHEMA INITIALIZATION "
+  ${DB_PKG_DIR}/bin/mysql -u root -p${ADMIN_PW} < ${DB_CONF_DIR}/init_schema.sql
+
+  echo "##### API-GATEWAY ::: DATABASE QUERY CTL ::::: create_database :: CREATE TABLE"
+  ${DB_PKG_DIR}/bin/mysql -u root -p${ADMIN_PW} < ${DB_CONF_DIR}/create_WSO2_CARBON_DB_table.sql
+  ${DB_PKG_DIR}/bin/mysql -u root -p${ADMIN_PW} < ${DB_CONF_DIR}/create_WSO2AM_DB_table.sql
+  ${DB_PKG_DIR}/bin/mysql -u root -p${ADMIN_PW} < ${DB_CONF_DIR}/create_WSO2MB_DB_table.sql
+
+  echo "##### API-GATEWAY ::: DATABASE QUERY CTL ::::: create_database :: END"
+}
