@@ -6,22 +6,19 @@ set -e -x
 ### BASE SETTING
 ############################################################################## 
 
+SCRIPT_NAME=$(basename $0)
 JOB_NAME=api-gateway
 JOB_DIR=/var/vcap/jobs/${JOB_NAME}
 PKG_DIR=/var/vcap/packages/${JOB_NAME}
-CONF_DIR=${JOB_DIR}/config/${JOB_NAME}
-DB_CONF_DIR=${JOB_DIR}/config/database
-DB_PKG_DIR=/var/vcap/packages/mariadb
-DATA_DIR=/var/vcap/store/mariadb
+CONF_DIR=${JOB_DIR}/config
 
 RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
 LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
 TMP_DIR=/var/vcap/sys/tmp/${JOB_NAME}
-DB_LOG_DIR=/var/vcap/sys/log/database
 
 function setup_environment() {
 
-  for dir in ${RUN_DIR} ${LOG_DIR} ${TMP_DIR} ${DB_LOG_DIR}
+  for dir in ${RUN_DIR} ${LOG_DIR} ${TMP_DIR}
   do
     mkdir -p ${dir}
     chown vcap:vcap ${dir}
@@ -33,61 +30,33 @@ function setup_environment() {
 
 setup_environment
 source /var/vcap/packages/common/syslog_utils.sh
-tee_output_to_sys_log_and_file "${LOG_DIR}" "$(basename "$0")"
+tee_output_to_sys_log_and_file ${LOG_DIR} ${SCRIPT_NAME}
 
 ############################################################################## 
 ### API-GATEWAY PRE-START
 ############################################################################## 
 
 CONF_TARGET_DIR=${PKG_DIR}/repository/conf
-SUPER_ADMIN_PW=<%= p("service.admin_password") %>
 
 # config Update
 cp ${CONF_DIR}/api-manager.xml ${PKG_DIR}/repository/conf
 cp ${CONF_DIR}/carbon.xml ${PKG_DIR}/repository/conf
-cp ${CONF_DIR}/master-datasources.xml ${PKG_DIR}/repository/conf/datasources
 cp ${CONF_DIR}/log4j.properties ${PKG_DIR}/repository/conf
 cp ${CONF_DIR}/catalina-server.xml ${PKG_DIR}/repository/conf/tomcat/catalina-server.xml
-
-# Admin Password Setting
-sed -i "/<Password/,/Password>/s/admin/${SUPER_ADMIN_PW}/g" ${PKG_DIR}/repository/conf/user-mgt.xml
+cp ${CONF_DIR}/user-mgt.xml ${PKG_DIR}/repository/conf
 
 # symbolic link for logging (The patches.log set in lib / org.wso2.carbon.server-x.x.jar) 
 ln -sf ${PKG_DIR}/repository/logs/patches.log ${LOG_DIR}/patches.log
 
-############################################################################## 
-### DATABASE PRE-START
-############################################################################## 
+##############################################################################
+### API-GATEWAY PRE-START :: mysql-client
+##############################################################################
 
-if [ ! -d /usr/local/mysql ]; then
-  echo "##### PRE-START :: API-GATEWAY-DATABASE :: link :: /usr/local/mysql -- ${DB_PKG_DIR}"
-  ln -s ${DB_PKG_DIR} /usr/local/mysql
+if [ ! -e ${LOG_DIR}/mysql-client ]; then
+
+    sudo apt update -y
+    echo "##### SETUP :: API-GATEWAY :: mysql-client :: START"
+    sudo apt install -y mysql-client
+    echo "##### SETUP :: API-GATEWAY :: mysql-client :: END"
+    touch ${LOG_DIR}/mysql-client
 fi
-
-if [ ! -e /tmp/mysql.sock ]; then
-  echo "##### PRE-START :: API-GATEWAY-DATABASE :: link :: /tmp/mysql.sock -- ${RUN_DIR}/mysql.sock"
-  ln -sf ${RUN_DIR}/mysql.sock /tmp/mysql.sock
-fi
-
-if [ ! -f /etc/mariadb/mariadb.cnf ]; then
-  echo "##### PRE-START :: API-GATEWAY-DATABASE :: link :: /etc/mariadb/mariadb.cnf -- ${DB_CONF_DIR}/mariadb.cnf"
-  mkdir -p /etc/mariadb
-  ln -sf ${DB_CONF_DIR}/mariadb.cnf /etc/mariadb/mariadb.cnf
-fi
-
-echo "======= DATA DIR CHECK :: START =================================================="
-echo `ls /var/vcap/store/`
-echo "======= DATA DIR CHECK ::   END =================================================="
-
-if [ ! -d ${DATA_DIR} ]; then
-  echo "#####  PRE-START :: API-GATEWAY-DATABASE :: mysql_install_db defaults-file = ${DB_CONF_DIR}/mariadb.cnf"
-
-  mkdir -p ${DATA_DIR}
-#  chown -R vcap:vcap ${DATA_DIR}
-
-  cd ${DB_PKG_DIR}
-  ./scripts/mysql_install_db --defaults-file=${DB_CONF_DIR}/mariadb.cnf --user=vcap
-  chown -R vcap:vcap ${DATA_DIR}
-
-fi
-

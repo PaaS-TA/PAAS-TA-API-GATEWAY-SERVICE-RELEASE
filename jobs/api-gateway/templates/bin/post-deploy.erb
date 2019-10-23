@@ -13,30 +13,31 @@ set -e -x
     end
   end
   WSO2_SERVER_URL = spec_ext_ip
-  DASHBOARD_URL="https://"+spec_ext_ip+":9443/carbon"
+  DASHBOARD_URL="https://"+spec_ext_ip+":9443/carbon|https://"+spec_ext_ip+":9443/publisher|https://"+spec_ext_ip+":9443/store"
 %>
 
 JOB_ID=<%= spec.id %>
 JOB_NAME=<%= spec.name %>
 SERVER_URL=<%="#{WSO2_SERVER_URL}"%>
-DB_PKG_DIR=/var/vcap/packages/mariadb
-DB_CONF_DIR=/var/vcap/jobs/api-gateway/config/database
 
-source /var/vcap/jobs/${JOB_NAME}/bin/db_query_ctl
+BROKER_DB_URL=<%= link('brokerdb_link').instances[0].address %>
+BROKER_DB_PORT=<%= link('brokerdb_link').p('database.port') %>
+BROKER_SCHEMA=<%= link('brokerdb_link').p('database.broker.schema_name') %>
+BROKER_USERNAME=<%= link('brokerdb_link').p('database.broker.username') %>
+BROKER_PASSWORD=<%= link('brokerdb_link').p('database.broker.password') %>
 
-check_vm_status
+VM_CHECK_QUERY="SELECT assignment FROM dedicated_vm WHERE vm_ip='${SERVER_URL}' and vm_name='${JOB_NAME}' and vm_id='${JOB_ID}'"
 
-echo "##### POST-DEPLOY ::: CHECK VM STATUS :: ${VM_STATUS}"
+VM_STATUS=`echo ${VM_CHECK_QUERY} | mysql -u ${BROKER_USERNAME} -p${BROKER_PASSWORD} --port $[BROKER_DB_PORT] --host ${BROKER_DB_URL} ${BROKER_SCHEMA} --skip-column-names`
 
-if [ ${VM_STATUS} -eq 1 ]; then
+if [[ -z "${VM_STATUS}" || ${VM_STATUS} -eq 1 ]]; then
 
-  echo "##### POST-DEPLOY ::: INSERT VM INFO"
+  echo "##### POST-DEPLOY ::: CHECK VM STATUS :: ${VM_STATUS}"
+  echo "##### POST-DEPLOY ::: INSERT VM INFO ::: $(date +%Y%m%d%H%M%S)"
 
-  INSERT_VM_INFO_QUERY="INSERT INTO dedicated_vm
-VALUES ('${SERVER_URL}', '${JOB_NAME}', '${JOB_ID}', 0, '<%= "#{DASHBOARD_URL}" %>', NULL, 0, NULL)
-ON DUPLICATE KEY UPDATE vm_name='${JOB_NAME}', vm_id='${JOB_ID}', assignment=0, dashboard_url='<%= "#{DASHBOARD_URL}" %>', provisioned_time=0,created_time=CURRENT_TIMESTAMP;"
+  INSERT_VM_INFO_QUERY="INSERT INTO dedicated_vm VALUES ('${SERVER_URL}', '${JOB_NAME}', '${JOB_ID}', 0, '<%= "#{DASHBOARD_URL}" %>', NULL, 0, NULL) ON DUPLICATE KEY UPDATE vm_name='${JOB_NAME}', vm_id='${JOB_ID}', assignment=0, dashboard_url='<%= "#{DASHBOARD_URL}" %>', provisioned_time=0, created_time=CURRENT_TIMESTAMP;"
 
-  RESULT=`echo ${INSERT_VM_INFO_QUERY} | ${DB_PKG_DIR}/bin/mysql -u ${BROKER_USERNAME} -p${BROKER_PASSWORD} --port $[BROKER_DB_PORT] --host ${BROKER_DB_URL} ${BROKER_SCHEMA}`
-
+  RESULT=`echo ${INSERT_VM_INFO_QUERY} | mysql -u ${BROKER_USERNAME} -p${BROKER_PASSWORD} --port $[BROKER_DB_PORT] --host ${BROKER_DB_URL} ${BROKER_SCHEMA}`
   echo "##### POST-DEPLOY ::: INSERT VM INFO ::: RESULT ::: $RESULT"
+
 fi

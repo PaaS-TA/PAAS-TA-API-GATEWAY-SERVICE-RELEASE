@@ -1,11 +1,11 @@
 <%
 pkg_dir = '/var/vcap/packages/mariadb'
 data_dir = '/var/vcap/store/mariadb'
-run_dir = '/var/vcap/sys/run/api-gateway'
-log_dir = '/var/vcap/sys/log/database'
-tmp_dir = '/var/vcap/sys/tmp/api-gateway'
+run_dir = '/var/vcap/sys/run/mariadb'
+log_dir = '/var/vcap/sys/log/mariadb'
+tmp_dir = '/var/vcap/sys/tmp/mariadb'
 %>
-
+ 
 [client]
 port            = <%= p('database.port') %>
 socket          = <%= "#{run_dir}/mysql.sock" %>
@@ -26,7 +26,7 @@ skip-external-locking
 bind-address    = 0.0.0.0
  
 key_buffer_size         = 16M
-max_allowed_packet      = 1G
+max_allowed_packet      = 50M
 table_open_cache        = 64
 sort_buffer_size        = 512K
 net_buffer_length       = 8K

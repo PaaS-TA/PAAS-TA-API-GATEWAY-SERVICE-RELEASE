@@ -34,7 +34,7 @@ case $1 in
               2>>${LOG_DIR}/${SCRIPT_NAME}.err.log &
 
     # Sleep for while server comes up
-    sleep 10
+    sleep 20
 
     # Service PID
     GATEWAY_PID=`ps -ef | grep java | grep -v grep | awk '{print $2}' `

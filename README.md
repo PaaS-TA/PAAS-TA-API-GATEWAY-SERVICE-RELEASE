@@ -12,7 +12,7 @@
 ## src directory
 src  
     ├── api-gateway  
-    │   ├── mysql-connector-java-5.1.47-bin.jar  
+    │   ├── artifacts.zip  
     │   └── wso2am-2.6.0.zip  
     ├── common  
     │   ├── pid_utils.sh  

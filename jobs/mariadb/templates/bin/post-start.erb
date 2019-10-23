@@ -1,0 +1,21 @@
+#!/bin/bash -e
+
+set -e -x
+
+JOB_NAME=mariadb
+CONF_DIR=/var/vcap/jobs/${JOB_NAME}/config
+PKG_DIR=/var/vcap/packages/${JOB_NAME}
+LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
+DATA_DIR=/var/vcap/store/${JOB_NAME}
+BROKER_SCHEMA="<%= p('database.broker.schema_name')%>"
+ADMIN_PW="<%= p('database.admin_password')%>"
+
+if [ ! -d "${DATA_DIR}/${BROKER_SCHEMA}" ]; then
+
+    echo "##### SERVICE-BROKER ::: DATABASE SCRIPT ::::: CREATE SCHEMA"
+    ${PKG_DIR}/bin/mysql -u root < ${CONF_DIR}/mariadb_init.sql
+
+    echo "##### SERVICE-BROKER ::: DATABASE SCRIPT ::::: CREATE TABLE"
+    ${PKG_DIR}/bin/mysql -u root -p${ADMIN_PW} < ${CONF_DIR}/create_broker_table.sql
+
+fi

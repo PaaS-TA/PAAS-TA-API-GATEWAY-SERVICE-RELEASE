@@ -1,0 +1,52 @@
+#!/bin/bash -e
+
+set -e -x
+
+SCRIPT_NAME=$(basename $0)
+JOB_NAME=mariadb
+RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
+CONF_DIR=/var/vcap/jobs/${JOB_NAME}/config
+PIDFILE=${RUN_DIR}/mariadb.pid
+PKG_DIR=/var/vcap/packages/${JOB_NAME}
+LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
+
+source /var/vcap/packages/common/syslog_utils.sh
+
+tee_output_to_sys_log_and_file ${LOG_DIR} ${SCRIPT_NAME}
+
+case $1 in
+
+  start)
+
+    echo "##### STARTING :: MARIA-DB :: SCRIPT_NAME :: ${SCRIPT_NAME}"
+    echo "##### STARTING :: MARIA-DB :: CONF_DIR :: ${CONF_DIR}"
+    echo "##### STARTING :: MARIA-DB :: PKG_DIR :: ${PKG_DIR}"
+    echo "##### STARTING :: MARIA-DB :: LOG_DIR :: ${LOG_DIR}"
+    echo "##### STARTING :: MARIA-DB :: PIDFILE :: ${PIDFILE}"
+
+    nohup ${PKG_DIR}/bin/mysqld_safe --defaults-file=${CONF_DIR}/mariadb.cnf --user=vcap \
+          >>${LOG_DIR}/${SCRIPT_NAME}.out.log \
+          2>>${LOG_DIR}/${SCRIPT_NAME}.err.log &
+
+    RETVAL=$?
+
+    if [ ${RETVAL} -ne 0 ]; then
+      echo "##### START :: MARIA-DB :: FAIL :: ${RETVAL}"
+      exit 1
+    fi
+
+    echo "##### START :: MARIA-DB :: SUCCESS :: ${PIDFILE}"
+
+    ;;
+
+  stop)
+    echo "##### STOP :: MARIA-DB :: SUCCESS :: ${PIDFILE}"
+    sudo kill $(cat $PIDFILE)
+    ;;
+
+  *)
+    echo "Usage: mariadb_ctl {start|stop}"
+    ;;
+
+esac
+exit 0

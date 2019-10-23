@@ -9,9 +9,9 @@ spring:
   application:
     name: api-gateway-service-broker
   datasource:
-    url: jdbc:mysql://<%= spec.address %>:<%= p('database.port') %>/<%= p('database.broker.schema_name') %>?zeroDateTimeBehavior=convertToNull&autoReconnect=true&useUnicode=true&characterEncoding=utf8
-    username: <%= p('database.broker.username') %>
-    password: <%= p('database.broker.password') %>
+    url: jdbc:mysql://<%= link('brokerdb_link').instances[0].address %>:<%= link('brokerdb_link').p('database.port') %>/<%= link('brokerdb_link').p('database.broker.schema_name') %>?zeroDateTimeBehavior=convertToNull&autoReconnect=true&useUnicode=true&characterEncoding=utf8
+    username: <%= link('brokerdb_link').p('database.broker.username') %>
+    password: <%= link('brokerdb_link').p('database.broker.password') %>
   jpa:
     hibernate:
       ddl-auto: none
@@ -27,6 +27,11 @@ logging:
     org.paasta.servicebroker.apigateway: <%= p('logging.level_broker') %>
     org.hibernate: <%= p('logging.level_hibernate') %>
 
+service:
+  admin: <%= p('service.admin') %>
+  admin_password: <%= p('service.admin_password') %>
+  service_admin: <%= p('service.service_admin') %>
+
 bosh:
   client_id: <%= p('bosh.client.id') %>
   client_secret: <%= p('bosh.client.secret') %>
@@ -37,7 +42,7 @@ bosh:
 services:
   id: <%= p('services.id') %>
   name: <%= p('services.name') %>
-  description: <%= p('services.description') %>
+  description: "<%= p('services.description') %>"
   bindable: <%= p('services.bindable') %>
   tags:
   metadata:
@@ -47,7 +52,6 @@ services:
     providerDisplayName: <%= p('services.metadata.providerDisplayName') %>
     documentationUrl: <%= p('services.metadata.documentationUrl') %>
     supportUrl: <%= p('services.metadata.supportUrl') %>
-#    requires:
   plan_updatable: <%= p('services.plan_updatable') %>
   plans:
     - id: <%= p('services.plans.id') %>
@@ -61,7 +65,3 @@ services:
             krw: <%= p('services.plans.costs_krw') %>
           unit: <%= p('services.plans.costs_unit') %>
       free: <%= p('services.plans.free') %>
-#  dashboardClient:
-#    id:
-#    secret:
-#    redirectUri:

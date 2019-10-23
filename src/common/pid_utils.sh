@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 function pid_is_running() {
   declare pid="$1"
@@ -103,12 +103,12 @@ function kill_and_wait() {
   fi
 
   echo "Killing ${pidfile}: ${pid} "
-  kill "${pid}"
+  kill ${pid}
 
   if ! wait_pid_death "${pid}" "${timeout}"; then
     if [ "${sigkill_on_timeout}" = "1" ]; then
       echo "Kill timed out, using kill -9 on ${pid}"
-      kill -9 "${pid}"
+      kill -9 ${pid}
       sleep 0.5
     fi
   fi

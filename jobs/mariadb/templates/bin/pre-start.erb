@@ -6,20 +6,19 @@ set -e -x
 ### BASE SETTING
 ##############################################################################
 
-JOB_NAME=service-broker
+JOB_NAME=mariadb
 JOB_DIR=/var/vcap/jobs/${JOB_NAME}
 CONF_DIR=${JOB_DIR}/config
-DB_PKG_DIR=/var/vcap/packages/mariadb
-DATA_DIR=/var/vcap/store/mariadb
+PKG_DIR=/var/vcap/packages/${JOB_NAME}
+DATA_DIR=/var/vcap/store/${JOB_NAME}
 
 RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
 LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
 TMP_DIR=/var/vcap/sys/tmp/${JOB_NAME}
-DB_LOG_DIR=/var/vcap/sys/log/database
 
 function setup_environment() {
 
-  for dir in ${RUN_DIR} ${LOG_DIR} ${TMP_DIR} ${DB_LOG_DIR}
+  for dir in ${RUN_DIR} ${LOG_DIR} ${TMP_DIR}
   do
     mkdir -p ${dir}
     chown vcap:vcap ${dir}
@@ -38,8 +37,8 @@ setup_environment
 ##############################################################################
 
 if [ ! -d /usr/local/mysql ]; then
-  echo "##### PRE-START :: BROKER-DATABASE :: link :: /usr/local/mysql -- ${DB_PKG_DIR}"
-  ln -s ${DB_PKG_DIR} /usr/local/mysql
+  echo "##### PRE-START :: BROKER-DATABASE :: link :: /usr/local/mysql -- ${PKG_DIR}"
+  ln -s ${PKG_DIR} /usr/local/mysql
 fi
 
 if [ ! -e /tmp/mysql.sock ]; then
@@ -59,8 +58,7 @@ if [ ! -d "${DATA_DIR}" ]; then
   mkdir -p ${DATA_DIR}
   chown -R vcap:vcap ${DATA_DIR}
 
-  cd ${DB_PKG_DIR}
+  cd ${PKG_DIR}
   ./scripts/mysql_install_db --defaults-file=${CONF_DIR}/mariadb.cnf --user=vcap
 
 fi
-

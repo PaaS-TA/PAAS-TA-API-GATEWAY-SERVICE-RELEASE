@@ -2,45 +2,19 @@
 name: service-broker
 
 templates:
-  bin/pre-start.erb: bin/pre-start
   bin/service_ctl.erb: bin/service_ctl
-  bin/mariadb_ctl.erb: bin/mariadb_ctl
   config/application.yml.erb: config/application.yml
-  config/mariadb.cnf.erb: config/mariadb.cnf
-  config/create_broker_table.sql.erb: config/create_broker_table.sql
-  config/mariadb_init.sql.erb: config/mariadb_init.sql
 
 packages: 
 - java
 - common
 - service-broker
-- mariadb
 
-provides:
+consumes:
 - name: brokerdb_link
   type: dbconn
-  properties:
-  - database.port
-  - database.broker.username
-  - database.broker.password
-  - database.broker.schema_name
 
 properties:
-  database.port:
-    description: "MariaDB server port"
-    default: 13306
-  database.admin_password:
-    description: "MariaDB admin user password"
-    default: admin
-  database.broker.username:
-    description: "MariaDB broker user"
-    default: broker
-  database.broker.password:
-    description: "MariaDB broker user password"
-    default: broker
-  database.broker.schema_name:
-    description: "MariaDB broker schema name"
-    default: apiGatewayBroker
   bosh.client.id:
     description: "Bosh client admin ID"
   bosh.client.secret:
@@ -66,6 +40,15 @@ properties:
   logging.level_hibernate:
     description: "hibernate logging level"
     default: INFO
+  service.admin:
+    description: "service super admin"
+    default: "admin"
+  service.admin_password:
+    description: "service super admin password"
+    default: "Service!"
+  service.service_admin:
+    description: "service admin user"
+    default: "serviceadmin"
   services.id:
     description: "An identifier used to correlate this service in future requests to the broker"
     default: "2c074457-d87d-401c-9838-b09c33cf9e73"
@@ -74,7 +57,7 @@ properties:
     default: "api-gateway"
   services.description:
     description: "A short description of the service"
-    default: "A PaaS-TA Api Gateway Service for application development."
+    default: "A PaaS-TA Api Gateway Service for application development. Required parameter for provisioning the service. {password: password}"
   services.bindable:
     description: "Specifies whether service instances of the service can be bound to applications"
     default: false

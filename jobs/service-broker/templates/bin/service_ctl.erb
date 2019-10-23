@@ -6,18 +6,32 @@ JOB_NAME=service-broker
 SCRIPT_NAME=$(basename $0)
 JOB_DIR=/var/vcap/jobs/${JOB_NAME}
 PKG_DIR=/var/vcap/packages/${JOB_NAME}
-LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
 JAVA_DIR=/var/vcap/packages/java
-RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
-PIDFILE=${RUN_DIR}/${JOB_NAME}.pid
-
 JAR_NAME="paasta-api-gateway-service-broker.jar"
 CONF_FILE=${JOB_DIR}/config/application.yml
+
+RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
+LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
+TMP_DIR=/var/vcap/sys/tmp/${JOB_NAME}
+PIDFILE=${RUN_DIR}/${JOB_NAME}.pid
+
+function setup_environment() {
+
+  for dir in ${RUN_DIR} ${LOG_DIR} ${TMP_DIR}
+  do
+    mkdir -p ${dir}
+    chown vcap:vcap ${dir}
+    chmod 775 ${dir}
+    echo "##### SETUP_ENVIRONMENT :: BROKER :: ${dir}"
+  done
+
+}
 
 source /var/vcap/packages/common/syslog_utils.sh
 source /var/vcap/packages/common/pid_utils.sh
 
 tee_output_to_sys_log_and_file ${LOG_DIR} ${SCRIPT_NAME}
+setup_environment
 
 case $1 in
 

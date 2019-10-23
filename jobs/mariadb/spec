@@ -1,0 +1,40 @@
+---
+name: mariadb
+
+templates: 
+  bin/mariadb_ctl.erb: bin/mariadb_ctl
+  bin/pre-start.erb: bin/pre-start
+  bin/post-start.erb: bin/post-start
+  config/mariadb.cnf.erb: config/mariadb.cnf
+  config/create_broker_table.sql.erb: config/create_broker_table.sql
+  config/mariadb_init.sql.erb: config/mariadb_init.sql
+
+packages: 
+- common
+- mariadb
+
+provides:
+- name: brokerdb_link
+  type: dbconn
+  properties:
+  - database.port
+  - database.broker.username
+  - database.broker.password
+  - database.broker.schema_name
+
+properties:
+  database.port:
+    description: MariaDB server port
+    default: 13306
+  database.admin_password:
+    description: MariaDB admin user password
+    default: admin
+  database.broker.username:
+    description: MariaDB broker user
+    default: broker
+  database.broker.password:
+    description: MariaDB broker user password
+    default: broker
+  database.broker.schema_name:
+    description: MariaDB broker schema name
+    default: apiGatewayBroker

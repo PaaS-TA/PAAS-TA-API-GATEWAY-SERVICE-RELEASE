@@ -1,12 +1,5 @@
 check process service-broker
   with pidfile /var/vcap/sys/run/service-broker/service-broker.pid
-  depends on mariadb
   start program "/var/vcap/jobs/service-broker/bin/service_ctl start" with timeout 30 seconds
   stop program "/var/vcap/jobs/service-broker/bin/service_ctl stop"
-  group vcap
-
-check process mariadb
-  with pidfile /var/vcap/sys/run/service-broker/mariadb.pid
-  start program "/var/vcap/jobs/service-broker/bin/mariadb_ctl start" with timeout 60 seconds
-  stop program "/var/vcap/jobs/service-broker/bin/mariadb_ctl stop"
   group vcap

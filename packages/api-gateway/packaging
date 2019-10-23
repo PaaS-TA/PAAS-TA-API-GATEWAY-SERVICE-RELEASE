@@ -1,23 +1,32 @@
 set -e -x
 
-PKG_NAME="wso2am-2.6.0"
-ARCHIVE="api-gateway/wso2am-2.6.0.zip"
-DB_CONNECTOR="api-gateway/mysql-connector-java-5.1.47-bin.jar"
+PKG_NAME_WSO2AM="wso2am-2.6.0"
+PKG_NAME_ARTIFACTS="artifacts"
+ARCHIVE_WSO2AM="api-gateway/wso2am-2.6.0.zip"
+ARCHIVE_ARTIFACTS="api-gateway/artifacts.zip"
 
-# CHECK EXISTED
-if [[ -f ${ARCHIVE} ]] ; then
+# CHECK EXISTED :: WSO2AM && ARTIFACTS
+if [ -f ${ARCHIVE_WSO2AM} -a -f ${ARCHIVE_ARTIFACTS} ] ; then
   echo "Archive found"
 else
   echo "Archive not found"
   exit 1
 fi
 
-# EXTRACT
-echo "Extracting ARCHIVE"
-unzip -q ${ARCHIVE}
+# EXTRACT :: WSO2AM
+echo "Extracting ${ARCHIVE_WSO2AM}"
+unzip -q ${ARCHIVE_WSO2AM}
 
-# COPY DB_CONNECTOR
-cp -a ${DB_CONNECTOR} ${PKG_NAME}/repository/components/lib
+# EXTRACT :: ARTIFACTS
+echo "Extracting ${ARCHIVE_ARTIFACTS}"
+unzip -q ${ARCHIVE_ARTIFACTS}
+
 
 # COPY
-cp -a ${PKG_NAME}/* ${BOSH_INSTALL_TARGET}
+cp -a ${PKG_NAME_WSO2AM}/* ${BOSH_INSTALL_TARGET}
+
+cp ${PKG_NAME_ARTIFACTS}/org.wso2.charon3.core-3.0.7.jar ${BOSH_INSTALL_TARGET}/repository/components/lib/
+cp ${PKG_NAME_ARTIFACTS}/charon-config.xml ${BOSH_INSTALL_TARGET}/repository/conf/identity/
+cp ${PKG_NAME_ARTIFACTS}/org.wso2.carbon.identity.scim2.common-1.1.19.jar ${BOSH_INSTALL_TARGET}/repository/components/dropins/
+cp ${PKG_NAME_ARTIFACTS}/scim2.war ${BOSH_INSTALL_TARGET}/repository/deployment/server/webapps/
+cp ${PKG_NAME_ARTIFACTS}/scim2-schema-extension.config ${BOSH_INSTALL_TARGET}/repository/conf/
