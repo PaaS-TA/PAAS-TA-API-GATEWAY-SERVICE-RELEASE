@@ -6,6 +6,17 @@
 - api-gateway-service-broker :: 1 machine
 - mariadb :: 1 machine
 
+## Create PAAS-TA-API-GATEWAY-SERVICE-RELEASE
+- Download the latest API Gateway Release
+    ```
+    $ git clone https://github.com/PaaS-TA/PAAS-TA-API-GATEWAY-SERVICE-RELEASE.git
+    ```
+- Create API Gateway Release
+    ```
+    $ cd PAAS-TA-API-GATEWAY-SERVICE-RELEASE
+    ## <RELEASE_TARBALL_PATH> :: release file path (e.g /home/ubuntu/workspace/paasta-api-gateway-service-release.tgz) 
+    $ bosh create-release --name=paasta-api-gateway-service --version=1.0 --tarball=<RELEASE_TARBALL_PATH> --force
+    ```
 ## PAAS-TA-API-GATEWAY-SERVICE-DEPLOYMENT 
 - https://github.com/PaaS-TA/PAAS-TA-API-GATEWAY-SERVICE-DEPLOYMENT
 
