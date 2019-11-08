@@ -11,9 +11,15 @@
     ```
     $ git clone https://github.com/PaaS-TA/PAAS-TA-API-GATEWAY-SERVICE-RELEASE.git
     ```
-- Copy "source files" into the src directory
+- Download & Copy "source files" into the src directory
     ```
-    ## src directory
+    ## download source files
+    $ wget -O source-files.zip http://45.248.73.44/index.php/s/T2rGwAnqiXR6dHc/download
+    
+    ## unzip download source files
+    $ unzip source-files.zip -d <src dircetory path>/
+    
+    ## final src directory
     src  
         ├── api-gateway  
         │   ├── artifacts.zip  
@@ -32,7 +38,7 @@
     ```
     $ cd PAAS-TA-API-GATEWAY-SERVICE-RELEASE
     ## <RELEASE_TARBALL_PATH> :: release file path (e.g. /home/ubuntu/workspace/paasta-api-gateway-service-release.tgz) 
-    $ bosh create-release --name=paasta-api-gateway-service --version=1.0 --tarball=<RELEASE_TARBALL_PATH> --force
+    $ bosh -e <bosh_name> create-release --name=paasta-api-gateway-service --version=1.0 --tarball=<RELEASE_TARBALL_PATH> --force
     ```
 ### PAAS-TA-API-GATEWAY-SERVICE-DEPLOYMENT 
 - https://github.com/PaaS-TA/PAAS-TA-API-GATEWAY-SERVICE-DEPLOYMENT
