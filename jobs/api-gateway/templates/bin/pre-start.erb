@@ -39,14 +39,37 @@ tee_output_to_sys_log_and_file ${LOG_DIR} ${SCRIPT_NAME}
 CONF_TARGET_DIR=${PKG_DIR}/repository/conf
 
 # config Update
-cp ${CONF_DIR}/api-manager.xml ${PKG_DIR}/repository/conf
-cp ${CONF_DIR}/carbon.xml ${PKG_DIR}/repository/conf
-cp ${CONF_DIR}/log4j.properties ${PKG_DIR}/repository/conf
-cp ${CONF_DIR}/catalina-server.xml ${PKG_DIR}/repository/conf/tomcat/catalina-server.xml
-cp ${CONF_DIR}/user-mgt.xml ${PKG_DIR}/repository/conf
+cp ${CONF_DIR}/log4j2.properties ${PKG_DIR}/repository/conf
+cp ${CONF_DIR}/deployment.toml ${PKG_DIR}/repository/conf
 
 # symbolic link for logging (The patches.log set in lib / org.wso2.carbon.server-x.x.jar) 
 ln -sf ${PKG_DIR}/repository/logs/patches.log ${LOG_DIR}/patches.log
+
+# Creating New Keystores
+<%
+  def spec_ext_ip
+    if spec.networks.vip.present?
+      spec.networks.vip.ip
+    elsif spec.networks.service_public.present?
+      spec.networks.service_public.ip
+    else
+      spec.address
+    end
+  end
+  WSO2_SERVER_URL = spec_ext_ip
+%>
+cd /var/vcap/packages/api-gateway/repository/resources/security
+
+if [ ! -f  PaaS-TA.jks ]; then
+    /var/vcap/packages/java/bin/keytool -genkey -alias PaaS-TA -keyalg RSA -keysize 2048 -keystore PaaS-TA.jks -dname "CN=<%= "#{WSO2_SERVER_URL}" %>, OU=PaaS-TA,O=PaaS-TA,L=PaaS-TA,S=PaaS-TA,C=KR" -storepass <%= p('service.admin_password') %> -keypass <%= p('service.admin_password') %>
+
+    /var/vcap/packages/java/bin/keytool -export -alias PaaS-TA -keystore PaaS-TA.jks -file PaaS-TA.pem
+
+    /var/vcap/packages/java/bin/keytool -import -alias PaaS-TA -noprompt -file PaaS-TA.pem -keystore client-truststore.jks -storepass wso2carbon
+fi
+
+sed -i "s/#identity.server.service.contextURL/identity.server.service.contextURL/"  /var/vcap/packages/api-gateway/repository/deployment/server/webapps/accountrecoveryendpoint/RecoveryEndpointConfig.properties 
+sed -i "s/#identity.server.service.contextURL/identity.server.service.contextURL/"  /var/vcap/packages/api-gateway/repository/deployment/server/webapps/accountrecoveryendpoint/WEB-INF/classes/RecoveryEndpointConfig.properties 
 
 ##############################################################################
 ### API-GATEWAY PRE-START :: mysql-client
@@ -60,3 +83,26 @@ if [ ! -e ${LOG_DIR}/mysql-client ]; then
     echo "##### SETUP :: API-GATEWAY :: mysql-client :: END"
     touch ${LOG_DIR}/mysql-client
 fi
+
+##############################################################################
+### CCE enable = <%= p('mariadb.cce_enable') %>
+##############################################################################
+  <% if p('mariadb.cce_enable') %>
+if [ ! -e ${LOG_DIR}/mysql-client-lib-CCE ]; then
+  echo "##### SETUP :: APP-GATEWAY :: mysql-client-lib(CCE) :: START"
+
+  sudo apt install apt-transport-https -y
+  curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
+
+  sudo apt-get install software-properties-common -y
+  sudo add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu bionic main'
+
+  sudo apt update -y
+
+  sudo apt-get install libmariadbclient18 -y
+  mkdir -p /usr/lib/mysql/plugin/
+  cp /usr/lib/x86_64-linux-gnu/libmariadb3/plugin/client_ed25519.so  /usr/lib/mysql/plugin/
+  touch ${LOG_DIR}/mysql-client-lib-CCE
+  echo "##### SETUP :: APP-GATEWAY :: mysql-client-lib(CCE) :: END"
+fi
+  <% end %>

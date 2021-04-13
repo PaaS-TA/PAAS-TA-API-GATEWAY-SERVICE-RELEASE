@@ -1,6 +1,21 @@
 -- ----------------------------------------------------------------------------------
 -- MARIA DB ROOT USER/SERVICE USER SETTING & CREATE SCHEMA  
 -- ----------------------------------------------------------------------------------
+<% if p("mariadb.cce_enable") %>
+
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'         IDENTIFIED VIA ed25519 USING PASSWORD('<%= p("database.admin_password") %>') WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED VIA ed25519 USING PASSWORD('<%= p("database.admin_password") %>') WITH GRANT OPTION;
+ALTER USER 'root'@'%'                             IDENTIFIED VIA ed25519 USING PASSWORD('<%= p("database.admin_password") %>');
+ALTER USER 'mariadb.sys'@'localhost'              IDENTIFIED VIA ed25519 USING PASSWORD('<%= p("database.admin_password") %>');
+ALTER USER 'vcap'@'localhost'                     IDENTIFIED VIA ed25519 USING PASSWORD('<%= p("database.admin_password") %>');
+FLUSH PRIVILEGES;
+
+CREATE USER '<%= p("database.broker.username") %>'@'localhost' IDENTIFIED VIA ed25519 USING PASSWORD('<%= p("database.broker.password") %>');
+GRANT ALL PRIVILEGES ON *.* TO '<%= p("database.broker.username") %>'@'%' IDENTIFIED VIA ed25519 USING PASSWORD('<%= p("database.broker.password") %>') WITH GRANT OPTION;
+CREATE SCHEMA IF NOT EXISTS `<%= p("database.broker.schema_name") %>` DEFAULT CHARACTER SET utf8;
+USE <%= p("database.broker.schema_name") %>;
+FLUSH PRIVILEGES;
+<% else %>
 UPDATE mysql.user SET password=PASSWORD('<%= p("database.admin_password") %>') WHERE user='root';
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '<%= p("database.admin_password") %>' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
@@ -11,3 +26,4 @@ USE <%= p("database.broker.schema_name") %>;
 GRANT ALL PRIVILEGES ON <%= p("database.broker.schema_name") %>.* TO '<%= p("database.broker.username") %>'@'%' IDENTIFIED BY '<%= p("database.broker.password") %>' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 
+<% end %>

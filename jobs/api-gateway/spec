@@ -5,11 +5,8 @@ templates:
   bin/service_ctl.erb: bin/service_ctl
   bin/pre-start.erb: bin/pre-start
   bin/post-deploy.erb: bin/post-deploy
-  config/api-manager.xml.erb: config/api-manager.xml
-  config/carbon.xml.erb: config/carbon.xml
-  config/log4j.properties.erb: config/log4j.properties
-  config/catalina-server.xml.erb: config/catalina-server.xml
-  config/user-mgt.xml.erb: config/user-mgt.xml
+  config/log4j2.properties.erb: config/log4j2.properties
+  config/deployment.toml.erb: config/deployment.toml
 
 packages: 
 - java
@@ -24,3 +21,5 @@ properties:
   service.admin_password:
     description: "API Gateway super admin password"
     default: "Service!"
+  mariadb.cce_enable:
+    defaul: false

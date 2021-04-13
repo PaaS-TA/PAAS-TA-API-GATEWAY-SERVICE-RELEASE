@@ -38,3 +38,7 @@ properties:
   database.broker.schema_name:
     description: MariaDB broker schema name
     default: apiGatewayBroker
+
+  mariadb.cce_enable:
+    description: 'mariadb.cce_enable'
+    default: false

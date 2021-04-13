@@ -49,11 +49,16 @@ myisam_sort_buffer_size = 8M
  
 #query_cache_limit       = 128K
 #query_cache_size        = 64M
- 
+
 general_log_file        = <%= "#{log_dir}/mariadb-general.log" %>
 general_log             = 1
 log-error               = <%= "#{log_dir}/mariadb-error.log" %>
+<% if p('mariadb.cce_enable') %>
+plugin_load_add         = auth_ed25519
+slow_query_log          = 1
+<% else %>
 log_warnings            = 2
+<% end %>
 slow_query_log_file     = <%= "#{log_dir}/mariadb-slow.log" %>
 long_query_time         = 10
 log_slow_verbosity      = query_plan
