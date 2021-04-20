@@ -1,0 +1,43 @@
+git clone https://github.com/wso2/carbon-identity-framework
+
+cd carbon-identity-framework
+
+git checkout tags/v5.17.5
+
+cd components/identity-mgt/org.wso2.carbon.identity.mgt.endpoint.util
+
+vi src/main/java/org/wso2/carbon/identity/mgt/endpoint/util/IdentityManagementEndpointUtil.java
+
+
+
+    /**
+     * Construct the URL depending on the path and the resource name.
+     *
+     * @param path path of the url
+     * @return endpoint url
+     */
+    public static String buildEndpointUrl(String path) {
+
+        String serviceContextURL = IdentityManagementServiceUtil.getInstance().getServiceContextURL();
+        String endpointUrl = replaceLastOccurrence(serviceContextURL,
+                IdentityManagementEndpointConstants.UserInfoRecovery.SERVICE_CONTEXT_URL, "");
+
+
+        if (path.startsWith("/")) {
+            ///////////////////////////////////////////////////////////////////////////////////////////////////
+ 	    // added PaaS-TA
+            ///////////////////////////////////////////////////////////////////////////////////////////////////
+            log.info("[PaaS-TA] serviceContextURL=" + serviceContextURL+ "= endpointUrl=" + endpointUrl +"=");
+            if (endpointUrl.lastIndexOf("/") == endpointUrl.length()-1 )
+                endpointUrl = endpointUrl.substring(0, endpointUrl.length()-1);
+            ///////////////////////////////////////////////////////////////////////////////////////////////////
+            return endpointUrl + path;
+        } else {
+            return endpointUrl + "/" + path;
+        }
+    }
+
+cd  carbon-identity-framework
+
+mvn clean package -DskipTests
+

@@ -1,0 +1,25 @@
+git clone https://github.com/wso2-extensions/identity-inbound-provisioning-scim2
+
+cd identity-inbound-provisioning-scim2
+
+git checkout tags/v1.5.7
+
+mvn clean package -DskipTests
+
+
+### artifacts 구성 파일 
+- identity-inbound-provisioning-scim2-1.5.7
+  L features\org.wso2.carbon.identity.scim2.server.feature\target\org.wso2.carbon.identity.scim2.server.feature-1.5.7.zip
+
+- org.wso2.carbon.identity.scim2.server.feature-1.5.7.zip 압축 해제
+  L plugins
+    + org.wso2.carbon.identity.scim2.common-1.5.7.jar
+    + org.wso2.charon3.core-3.3.16.jar
+  L features
+    L org.wso2.carbon.identity.scim2.provider_1.5.7
+      + scim2.war
+    L org.wso2.carbon.identity.scim2.common_1.5.7
+      + charon-config.xml
+      + scim2-schema-extension.config
+
+
