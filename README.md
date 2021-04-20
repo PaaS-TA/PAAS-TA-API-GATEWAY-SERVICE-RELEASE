@@ -14,23 +14,24 @@
 - Download & Copy "source files" into the src directory
     ```
     ## download source files
-    $ wget -O source-files.zip http://45.248.73.44/index.php/s/T2rGwAnqiXR6dHc/download
+    $ wget -O src.zip https://nextcloud.paas-ta.org/index.php/s/EHawRiibxKPMz99/download
     
     ## unzip download source files
-    $ unzip source-files.zip -d <src dircetory path>/
+    $ unzip src.zip
     
     ## final src directory
     src  
         ├── api-gateway  
-        │   ├── artifacts.zip  
-        │   └── wso2am-2.6.0.zip  
+        │   ├── artifacts-1.5.7.zip  
+        │   ├── org.wso2.carbon.identity.mgt.endpoint.util-5.17.5-PaaS-TA.jar
+        │   └── wso2am-3.2.0.zip  
         ├── common  
         │   ├── pid_utils.sh  
         │   └── syslog_utils.sh  
         ├── java  
         │   └── OpenJDK8U-jre_x64_linux_hotspot_8u212b03.tar.gz  
         ├── mariadb  
-        │   └── mariadb-10.3.15-linux-x86_64.tar.gz  
+        │   └── mariadb-10.5.9-linux-x86_64.tar.gz  
         └── service-broker  
         │   └── paasta-api-gateway-service-broker.jar  
     ```
@@ -45,5 +46,5 @@
 
 ### 참고 자료
 - https://bosh.io/docs
-- https://docs.wso2.com/display/AM260/WSO2+API+Manager+Documentation
+- https://apim.docs.wso2.com/en/latest/
     
