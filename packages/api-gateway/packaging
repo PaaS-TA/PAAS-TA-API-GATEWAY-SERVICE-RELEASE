@@ -1,9 +1,10 @@
 set -e -x
 
-PKG_NAME_WSO2AM="wso2am-2.6.0"
+PKG_NAME_WSO2AM="wso2am-3.2.0"
 PKG_NAME_ARTIFACTS="artifacts"
-ARCHIVE_WSO2AM="api-gateway/wso2am-2.6.0.zip"
-ARCHIVE_ARTIFACTS="api-gateway/artifacts.zip"
+ARCHIVE_WSO2AM="api-gateway/wso2am-3.2.0.zip"
+ARCHIVE_ARTIFACTS="api-gateway/artifacts-1.5.7.zip"
+CARBON_IDENTITY_UTIL="api-gateway/org.wso2.carbon.identity.mgt.endpoint.util-5.17.5-PaaS-TA.jar"
 
 # CHECK EXISTED :: WSO2AM && ARTIFACTS
 if [ -f ${ARCHIVE_WSO2AM} -a -f ${ARCHIVE_ARTIFACTS} ] ; then
@@ -19,14 +20,25 @@ unzip -q ${ARCHIVE_WSO2AM}
 
 # EXTRACT :: ARTIFACTS
 echo "Extracting ${ARCHIVE_ARTIFACTS}"
-unzip -q ${ARCHIVE_ARTIFACTS}
+echo "unzip -q ${ARCHIVE_ARTIFACTS} -d ${PKG_NAME_ARTIFACTS}"
+unzip -q ${ARCHIVE_ARTIFACTS} -d ${PKG_NAME_ARTIFACTS}
 
+echo "[sunny] PKG_NAME_WSO2AM=${PKG_NAME_WSO2AM}" >> /var/vcap/sunny.log
+echo "[sunny] PKG_NAME_ARTIFACTS=${PKG_NAME_ARTIFACTS}" >> /var/vcap/sunny.log
+echo "[sunny] BOSH_INSTALL_TARGET=${BOSH_INSTALL_TARGET}"  >> /var/vcap/sunny.log
 
-# COPY
+## COPY
 cp -a ${PKG_NAME_WSO2AM}/* ${BOSH_INSTALL_TARGET}
 
-cp ${PKG_NAME_ARTIFACTS}/org.wso2.charon3.core-3.0.7.jar ${BOSH_INSTALL_TARGET}/repository/components/lib/
+cp ${PKG_NAME_ARTIFACTS}/org.wso2.charon3.core-3.3.16.jar ${BOSH_INSTALL_TARGET}/repository/components/lib/
 cp ${PKG_NAME_ARTIFACTS}/charon-config.xml ${BOSH_INSTALL_TARGET}/repository/conf/identity/
-cp ${PKG_NAME_ARTIFACTS}/org.wso2.carbon.identity.scim2.common-1.1.19.jar ${BOSH_INSTALL_TARGET}/repository/components/dropins/
+cp ${PKG_NAME_ARTIFACTS}/org.wso2.carbon.identity.scim2.common-1.5.7.jar ${BOSH_INSTALL_TARGET}/repository/components/dropins/
 cp ${PKG_NAME_ARTIFACTS}/scim2.war ${BOSH_INSTALL_TARGET}/repository/deployment/server/webapps/
 cp ${PKG_NAME_ARTIFACTS}/scim2-schema-extension.config ${BOSH_INSTALL_TARGET}/repository/conf/
+
+
+if [ -f ${CARBON_IDENTITY_UTIL} ] ; then
+  ls -l ${BOSH_INSTALL_TARGET}/repository/deployment/server/webapps/accountrecoveryendpoint/WEB-INF/lib/org.wso2.carbon.identity.mgt.endpoint.util-5.17.5.jar
+  cp  ${CARBON_IDENTITY_UTIL}  ${BOSH_INSTALL_TARGET}/repository/deployment/server/webapps/accountrecoveryendpoint/WEB-INF/lib/org.wso2.carbon.identity.mgt.endpoint.util-5.17.5.jar
+  ls -l ${BOSH_INSTALL_TARGET}/repository/deployment/server/webapps/accountrecoveryendpoint/WEB-INF/lib/org.wso2.carbon.identity.mgt.endpoint.util-5.17.5.jar
+fi

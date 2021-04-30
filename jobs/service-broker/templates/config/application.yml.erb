@@ -12,6 +12,7 @@ spring:
     url: jdbc:mysql://<%= link('brokerdb_link').instances[0].address %>:<%= link('brokerdb_link').p('database.port') %>/<%= link('brokerdb_link').p('database.broker.schema_name') %>?zeroDateTimeBehavior=convertToNull&autoReconnect=true&useUnicode=true&characterEncoding=utf8
     username: <%= link('brokerdb_link').p('database.broker.username') %>
     password: <%= link('brokerdb_link').p('database.broker.password') %>
+    driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: none

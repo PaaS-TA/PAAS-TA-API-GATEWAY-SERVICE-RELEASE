@@ -103,3 +103,5 @@ properties:
   services.plans.free:
     description: "When false, service instances of this plan have a cost. The default is true."
     default: true
+  mariadb.cce_enable:
+    default: false
