@@ -1,5 +1,3 @@
-## PAAS-TA-API-GATEWAY-SERVICE-RELEASE
-
 ## Related Repositories
 
 <table>
@@ -66,10 +64,7 @@
 <i>🚩 You are here.</i>
 
 
-
-  
-
-  
+## PAAS-TA-API-GATEWAY-SERVICE-RELEASE
 
 ### PaaS-TA API Gateway Service Configuration
 - api-gateway-server :: N machine(s)
