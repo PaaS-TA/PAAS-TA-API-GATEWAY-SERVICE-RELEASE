@@ -1,6 +1,6 @@
-# PAAS-TA-API-GATEWAY-SERVICE-RELEASE
+## PAAS-TA-API-GATEWAY-SERVICE-RELEASE
 
-# Related Repositories
+## Related Repositories
 
 <table>
   <tr>
