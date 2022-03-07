@@ -96,7 +96,7 @@
         ├── java  
         │   └── OpenJDK8U-jre_x64_linux_hotspot_8u212b03.tar.gz  
         ├── mariadb  
-        │   └── mariadb-10.5.9-linux-x86_64.tar.gz  
+        │   └── mariadb-10.5.15-linux-x86_64.tar.gz  
         └── service-broker  
         │   └── paasta-api-gateway-service-broker.jar  
     ```
