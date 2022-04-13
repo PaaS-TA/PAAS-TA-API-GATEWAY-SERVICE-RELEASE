@@ -2,7 +2,7 @@ set -e -x
 
 PKG_NAME_WSO2AM="wso2am-3.2.0"
 PKG_NAME_ARTIFACTS="artifacts"
-ARCHIVE_WSO2AM="api-gateway/wso2am-3.2.0-PaaS-TA.zip"
+ARCHIVE_WSO2AM="api-gateway/wso2am-3.2.0-PaaS-TA-v2.zip"
 ARCHIVE_ARTIFACTS="api-gateway/artifacts-1.5.7.zip"
 CARBON_IDENTITY_UTIL="api-gateway/org.wso2.carbon.identity.mgt.endpoint.util-5.17.5-PaaS-TA.jar"
 
