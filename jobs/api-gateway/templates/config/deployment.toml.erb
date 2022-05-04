@@ -287,3 +287,17 @@ notification_endpoint = "https://<%= "#{WSO2_SERVER_URL}" %>:${mgt.transport.htt
 username = "${admin.username}"
 password = "${admin.password}"
 'header.X-WSO2-KEY-MANAGER' = "default"
+
+########## CVE-2022-29464 ##########
+[[resource.access_control]]
+context="(.*)/fileupload/resource(.*)"
+secure=false
+http_method = "all"
+
+[[resource.access_control]]
+context="(.*)/fileupload/(.*)"
+secure=true
+http_method = "all"
+permissions = ["/permission/protected/"]
+
+####################################
