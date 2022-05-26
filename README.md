@@ -79,7 +79,7 @@
 - Download & Copy "source files" into the src directory
     ```
     ## download source files
-    $ wget -O src.zip https://nextcloud.paas-ta.org/index.php/s/w2GsiZcMXtCofBr/download
+    $ wget -O src.zip https://nextcloud.paas-ta.org/index.php/s/AK4cCoCyBHrbFNC/download
     
     ## unzip download source files
     $ unzip src.zip
@@ -89,14 +89,14 @@
         ├── api-gateway  
         │   ├── artifacts-1.5.7.zip  
         │   ├── org.wso2.carbon.identity.mgt.endpoint.util-5.17.5-PaaS-TA.jar
-        │   └── wso2am-3.2.0-PaaS-TA-v2.zip
+        │   └── wso2am-3.2.0-PaaS-TA-v3.zip
         ├── common  
         │   ├── pid_utils.sh  
         │   └── syslog_utils.sh  
         ├── java  
         │   └── OpenJDK8U-jre_x64_linux_hotspot_8u212b03.tar.gz  
         ├── mariadb  
-        │   └── mariadb-10.5.15-linux-x86_64.tar.gz  
+        │   └── mariadb-10.5.16-linux-x86_64.tar.gz  
         └── service-broker  
         │   └── paasta-api-gateway-service-broker.jar  
     ```
