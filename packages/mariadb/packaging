@@ -1,7 +1,7 @@
 set -e -x
 
-PKG_NAME="mariadb-10.5.16-linux-x86_64"
-ARCHIVE="mariadb/mariadb-10.5.16-linux-x86_64.tar.gz"
+PKG_NAME="mariadb-10.5.17-linux-x86_64"
+ARCHIVE="mariadb/mariadb-10.5.17-linux-x86_64.tar.gz"
 
 
 # CHECK EXISTED
