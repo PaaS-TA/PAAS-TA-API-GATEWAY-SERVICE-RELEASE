@@ -1,3 +1,30 @@
 [ download ] https://wso2.com/api-management/
 
 
+- how to tomcat patch
+
+1. TOMCAT lib Directory
+wso2am-3.2.0/repository/components/plugins (https://maven.wso2.org/nexus/content/repositories/releases/org/wso2/orbit/org/apache/tomcat/)
+- tomcat			
+- tomcat-catalina-ha
+- tomcat-el-api
+- tomcat-jsp-api
+- tomcat-servlet-api
+
+※ 다운로드 후 파일 이름 변경 필요 (e.g. tomcat-catalina-ha-9.0.68.wso2v1.jar --> tomcat-catalina-ha_9.0.68.wso2v1.jar)
+
+
+wso2am-3.2.0/bin (https://repo1.maven.org/maven2/org/apache/tomcat/tomcat-juli/)
+- tomcat-juli
+
+
+2. 라이브러리 config상 버전 변경 (e.g. 9.0.58 -> 9.0.68)
+repository/components/api-devportal/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info
+repository/components/api-key-manager/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info
+repository/components/api-publisher/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info
+repository/components/artifacts.xml
+repository/components/default/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info
+repository/components/features/org.wso2.carbon.core.common_4.6.0/feature.xml
+repository/components/gateway-worker/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info
+repository/components/traffic-manager/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info
+repository/components/features/org.wso2.carbon.core.common_4.6.0/feature.xml
