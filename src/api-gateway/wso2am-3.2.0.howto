@@ -27,4 +27,3 @@ repository/components/default/configuration/org.eclipse.equinox.simpleconfigurat
 repository/components/features/org.wso2.carbon.core.common_4.6.0/feature.xml
 repository/components/gateway-worker/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info
 repository/components/traffic-manager/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info
-repository/components/features/org.wso2.carbon.core.common_4.6.0/feature.xml
