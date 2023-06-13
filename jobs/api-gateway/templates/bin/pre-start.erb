@@ -78,9 +78,22 @@ sed -i "s/#identity.server.service.contextURL/identity.server.service.contextURL
 
 if [ ! -e ${LOG_DIR}/mysql-client ]; then
 
-    sudo apt update -y
     echo "##### SETUP :: API-GATEWAY :: mysql-client :: START"
-    sudo apt install -y mysql-client
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get upgrade -y
+    apt-get install -y wget lsb-release gnupg
+    
+    debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/unsupported-platform select ubuntu bionic'
+    debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/select-server select mysql-5.7'
+    debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/repo-codename select bionic'
+    debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/repo-distro select ubuntu'
+    
+    wget https://dev.mysql.com/get/mysql-apt-config_0.8.12-1_all.deb
+    dpkg -i mysql-apt-config_0.8.12-1_all.deb
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29
+    apt-get update
+    apt-get install -y -f mysql-client=5.7*
     echo "##### SETUP :: API-GATEWAY :: mysql-client :: END"
     touch ${LOG_DIR}/mysql-client
 fi
