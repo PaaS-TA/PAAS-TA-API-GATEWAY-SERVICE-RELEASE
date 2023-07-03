@@ -16,6 +16,9 @@ RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
 LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
 TMP_DIR=/var/vcap/sys/tmp/${JOB_NAME}
 
+  # ubuntu jammy lib
+  sudo apt-get install libtinfo5 -y
+
 function setup_environment() {
 
   for dir in ${RUN_DIR} ${LOG_DIR} ${TMP_DIR}
