@@ -16,6 +16,8 @@ RUN_DIR=/var/vcap/sys/run/${JOB_NAME}
 LOG_DIR=/var/vcap/sys/log/${JOB_NAME}
 TMP_DIR=/var/vcap/sys/tmp/${JOB_NAME}
 
+export GNUTLS_CPUID_OVERRIDE=0x1 
+
 function setup_environment() {
 
   for dir in ${RUN_DIR} ${LOG_DIR} ${TMP_DIR}
@@ -80,6 +82,7 @@ if [ ! -e ${LOG_DIR}/mysql-client ]; then
 
     echo "##### SETUP :: API-GATEWAY :: mysql-client :: START"
     export DEBIAN_FRONTEND=noninteractive
+   #export GNUTLS_CPUID_OVERRIDE=0x1 
     apt-get update
     apt-get upgrade -y
     apt-get install -y wget lsb-release gnupg
@@ -91,7 +94,7 @@ if [ ! -e ${LOG_DIR}/mysql-client ]; then
     
     wget https://dev.mysql.com/get/mysql-apt-config_0.8.12-1_all.deb
     dpkg -i mysql-apt-config_0.8.12-1_all.deb
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29
     apt-get update
     apt-get install -y -f mysql-client=5.7*
     echo "##### SETUP :: API-GATEWAY :: mysql-client :: END"
@@ -105,16 +108,22 @@ fi
 if [ ! -e ${LOG_DIR}/mysql-client-lib-CCE ]; then
   echo "##### SETUP :: APP-GATEWAY :: mysql-client-lib(CCE) :: START"
 
-  sudo apt install apt-transport-https -y
-  curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
+  apt install apt-transport-https -y
+  apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+  echo "sunny apt-key"
+  cp /etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/
+  echo "sunny cp trusted.gpg"
+  curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash
 
-  sudo apt-get install software-properties-common -y
-  #sudo add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu bionic main'
-
-  sudo apt update -y
-
-  sudo apt-get install libmariadbclient18 -y
+  apt-get install software-properties-common -y
+  #add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu bionic main'
+  echo 'sunny install software-properties-common -y'
+  apt update -y
+  echo 'sunny apt update'
+  apt-get install libmariadbclient18 -y
+  echo 'sunny install libmariadbclient18 -y'
   mkdir -p /usr/lib/mysql/plugin/
+  echo 'sunny mkdir'
   cp /usr/lib/x86_64-linux-gnu/libmariadb3/plugin/client_ed25519.so  /usr/lib/mysql/plugin/
   touch ${LOG_DIR}/mysql-client-lib-CCE
   echo "##### SETUP :: APP-GATEWAY :: mysql-client-lib(CCE) :: END"
