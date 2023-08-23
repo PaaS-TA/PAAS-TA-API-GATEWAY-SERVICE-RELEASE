@@ -4,6 +4,6 @@ name: api-gateway
 dependencies: []
 
 files: 
-- api-gateway/wso2am-3.2.0-PaaS-TA-v5.zip
+- api-gateway/wso2am-3.2.0-PaaS-TA-v6.zip
 - api-gateway/artifacts-1.5.7.zip
 - api-gateway/org.wso2.carbon.identity.mgt.endpoint.util-5.17.5-PaaS-TA.jar
