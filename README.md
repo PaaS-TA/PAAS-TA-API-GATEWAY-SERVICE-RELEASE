@@ -89,7 +89,7 @@
         ├── api-gateway  
         │   ├── artifacts-1.5.7.zip  
         │   ├── org.wso2.carbon.identity.mgt.endpoint.util-5.17.5-PaaS-TA.jar
-        │   └── wso2am-3.2.0-PaaS-TA-v6.zip (tomcat 9.0.71)
+        │   └── wso2am-3.2.0-PaaS-TA-v6.zip (tomcat 9.0.76)
         ├── common  
         │   ├── pid_utils.sh  
         │   └── syslog_utils.sh  
