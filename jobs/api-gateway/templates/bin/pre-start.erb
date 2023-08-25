@@ -84,6 +84,17 @@ if [ ! -e ${LOG_DIR}/mysql-client ]; then
     export DEBIAN_FRONTEND=noninteractive
    #export GNUTLS_CPUID_OVERRIDE=0x1 
     apt update
+
+    echo "linux-generic-hwe-22.04 hold" | dpkg --set-selections
+    echo "linux-headers-generic-hwe-22.04 hold" | dpkg --set-selections
+    echo "linux-image-generic-hwe-22.04 hold" | dpkg --set-selections
+
+    echo "initramfs-tools-bin hold" | dpkg --set-selections  
+    echo "initramfs-tools-core hold" | dpkg --set-selections
+    echo "initramfs-tools hold" | dpkg --set-selections
+  
+    echo "linux-firmware hold" | dpkg --set-selections
+
     apt -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" dist-upgrade -q -y --allow-downgrades --allow-remove-essential --allow-change-held-packages
     apt upgrade -y
     apt install -y wget lsb-release gnupg
