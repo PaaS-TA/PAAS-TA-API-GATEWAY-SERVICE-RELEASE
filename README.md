@@ -79,7 +79,7 @@
 - Download & Copy "source files" into the src directory
     ```
     ## download source files
-    $ wget -O src.zip https://nextcloud.paas-ta.org/index.php/s/2mKdBBRtxyNQnSc/download
+    $ wget -O src.zip https://nextcloud.paas-ta.org/index.php/s/Cprp92C7tS4q9JW/download
     
     ## unzip download source files
     $ unzip src.zip
@@ -89,7 +89,7 @@
         ├── api-gateway  
         │   ├── artifacts-1.5.7.zip  
         │   ├── org.wso2.carbon.identity.mgt.endpoint.util-5.17.5-PaaS-TA.jar
-        │   └── wso2am-3.2.0-PaaS-TA-v5.zip (tomcat 9.0.71)
+        │   └── wso2am-3.2.0-PaaS-TA-v6.zip (tomcat 9.0.76)
         ├── common  
         │   ├── pid_utils.sh  
         │   └── syslog_utils.sh  

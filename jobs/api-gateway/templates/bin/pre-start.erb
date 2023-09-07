@@ -83,9 +83,21 @@ if [ ! -e ${LOG_DIR}/mysql-client ]; then
     echo "##### SETUP :: API-GATEWAY :: mysql-client :: START"
     export DEBIAN_FRONTEND=noninteractive
    #export GNUTLS_CPUID_OVERRIDE=0x1 
-    apt-get update
-    apt-get upgrade -y
-    apt-get install -y wget lsb-release gnupg
+    apt update
+
+    echo "linux-generic-hwe-22.04 hold" | dpkg --set-selections
+    echo "linux-headers-generic-hwe-22.04 hold" | dpkg --set-selections
+    echo "linux-image-generic-hwe-22.04 hold" | dpkg --set-selections
+
+    echo "initramfs-tools-bin hold" | dpkg --set-selections  
+    echo "initramfs-tools-core hold" | dpkg --set-selections
+    echo "initramfs-tools hold" | dpkg --set-selections
+  
+    echo "linux-firmware hold" | dpkg --set-selections
+
+    apt -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" dist-upgrade -q -y --allow-downgrades --allow-remove-essential --allow-change-held-packages
+    apt upgrade -y
+    apt install -y wget lsb-release gnupg
     
     debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/unsupported-platform select ubuntu bionic'
     debconf-set-selections <<< 'mysql-apt-config mysql-apt-config/select-server select mysql-5.7'
@@ -95,8 +107,8 @@ if [ ! -e ${LOG_DIR}/mysql-client ]; then
     wget https://dev.mysql.com/get/mysql-apt-config_0.8.12-1_all.deb
     dpkg -i mysql-apt-config_0.8.12-1_all.deb
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29
-    apt-get update
-    apt-get install -y -f mysql-client=5.7*
+    apt update
+    apt install -y -f mysql-client=5.7*
     echo "##### SETUP :: API-GATEWAY :: mysql-client :: END"
     touch ${LOG_DIR}/mysql-client
 fi
@@ -113,10 +125,10 @@ if [ ! -e ${LOG_DIR}/mysql-client-lib-CCE ]; then
   cp /etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/
   curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash
 
-  apt-get install software-properties-common -y
+  apt install software-properties-common -y
   #add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu bionic main'
   apt update -y
-  apt-get install libmariadbclient18 -y
+  apt install libmariadbclient18 -y
   mkdir -p /usr/lib/mysql/plugin/
   cp /usr/lib/x86_64-linux-gnu/libmariadb3/plugin/client_ed25519.so  /usr/lib/mysql/plugin/
   touch ${LOG_DIR}/mysql-client-lib-CCE
